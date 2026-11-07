@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<title>MT2 · Máquina de Turing: resta binaria A − B</title>
+
+<style>
+
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light;
+
+--bg:#f2f0eb;--card:#fbfaf7;--tx:#2b2f33;--mut:#6b7076;--bd:#dcd8cf;--ac:#4f6f8f;--acx:#fff;--ok:#4d7c5b;--bad:#a4524a;--aux:#ece2cf;--auxt:#6b5a3a;--sg:#dde6ee}
+
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#1a1d21;--card:#23272c;--tx:#e4e2dc;--mut:#9a9fa5;--bd:#373c43;--ac:#8fb0cc;--acx:#14202b;--ok:#8fc0a0;--bad:#d99a92;--aux:#3b3426;--auxt:#dccaa3;--sg:#2a3a48}}
+
+:root[data-theme="dark"]{color-scheme:dark;--bg:#1a1d21;--card:#23272c;--tx:#e4e2dc;--mut:#9a9fa5;--bd:#373c43;--ac:#8fb0cc;--acx:#14202b;--ok:#8fc0a0;--bad:#d99a92;--aux:#3b3426;--auxt:#dccaa3;--sg:#2a3a48}
+
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+
+{box-sizing:border-box}
+
+body{margin:0;background:radial-gradient(1100px 480px at 50% -8%,color-mix(in srgb,var(--ac) 16%,transparent),transparent),var(--bg);background-attachment:fixed;color:var(--tx);font:15.5px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+
+main{max-width:860px;margin:0 auto;padding:28px 16px 48px}
+
+h1{font-size:1.65rem;font-weight:650;letter-spacing:-.01em;margin:.1em 0 .15em}h2{font-size:1.05rem;font-weight:650;margin:0 0 .85em;letter-spacing:-.005em}h2::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ac);margin-right:10px;vertical-align:middle}
+
+p.s{color:var(--mut);margin:.2em 0 1em}
+
+.card{background:var(--card);border:1px solid color-mix(in srgb,var(--bd) 70%,transparent);border-radius:20px;padding:22px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 12px 32px rgba(0,0,0,.06)}
+
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+
+label{display:flex;flex-direction:column;font-size:.8rem;color:var(--mut);gap:3px}
+
+input[type=text]{font:inherit;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.1rem;padding:10px 14px;border:1px solid var(--bd);border-radius:14px;background:var(--bg);color:var(--tx);width:11em;max-width:100%}
+
+button{font:inherit;font-weight:500;padding:8px 18px;border-radius:999px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer}
+
+button.p{background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 65%,#7b86b0));color:var(--acx);border-color:transparent;box-shadow:0 4px 14px color-mix(in srgb,var(--ac) 30%,transparent)}
+
+button{transition:border-color .15s,filter .15s}button:hover{border-color:var(--ac)}button.p:hover{filter:brightness(1.08)}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.chips button{font-size:.8rem;padding:5px 13px;font-family:ui-monospace,monospace;background:var(--bg)}
+
+.tape{display:grid;gap:3px;margin:0 0 6px;padding:20px 2px 4px;overflow-x:auto;position:relative}
+
+.c{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:1px solid var(--bd);border-radius:12px;font:600 clamp(.8rem,3.6vw,1.25rem) ui-monospace,Menlo,Consolas,monospace;position:relative;background:var(--bg);box-shadow:0 1px 0 rgba(0,0,0,.05);transition:background .2s,transform .15s}
+
+.c.a{background:var(--aux);color:var(--auxt)}.c.g{background:var(--sg);color:var(--ac)}.c.b{color:var(--mut);font-weight:400}
+
+.c.h{outline:2px solid var(--ac);outline-offset:1px;transform:translateY(-2px);box-shadow:0 0 0 5px color-mix(in srgb,var(--ac) 18%,transparent)}
+
+.c.h::before{content:"▼";position:absolute;top:-17px;font-size:.7rem;color:var(--ac)}
+
+.info{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.88rem}.info b{font-family:ui-monospace,monospace}
+
+#msg{margin-top:8px;font-weight:600;min-height:1.5em}.ok{color:var(--ok)}.bad{color:var(--bad)}
+
+.mut{color:var(--mut)}input:focus,button:focus-visible{outline:2px solid var(--ac);outline-offset:1px}.badge{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ac);background:color-mix(in srgb,var(--ac) 13%,transparent);padding:4px 12px;border-radius:999px}
+
+table{border-collapse:collapse;width:100%;font-size:.84rem}
+
+th,td{border-bottom:1px solid var(--bd);padding:4px 8px;text-align:left;vertical-align:top}
+
+td.m{font-family:ui-monospace,Menlo,Consolas,monospace;white-space:nowrap}
+
+.scroll{overflow-x:auto}th{color:var(--mut);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}tbody tr:hover td{background:color-mix(in srgb,var(--ac) 7%,transparent)}input[type=range]{accent-color:var(--ac)}
+
+details summary{cursor:pointer;font-weight:600}
+
+code{font-family:ui-monospace,monospace;background:var(--bg);padding:0 4px;border-radius:4px}
+
+</style></head><body><main>
+
+<span class="badge">Autómatas y Lenguajes Formales</span>
+
+<h1>MT2 · Máquina de Turing: resta binaria A − B</h1>
+
+<p class="s">Determinista, una sola cinta, entrada <code>A␣B</code> con un blanco como separador. Admite longitudes distintas, conserva ceros a la izquierda y antepone <code>-</code> si el resultado es negativo.</p>
+
+
+
+<div class="card">
+
+<div class="row">
+
+<label>A (minuendo)<input id="a" type="text" value="1010" inputmode="numeric" autocomplete="off"></label>
+
+<label>B (sustraendo)<input id="b" type="text" value="0011" inputmode="numeric" autocomplete="off"></label>
+
+<button class="p" id="load">Cargar cinta</button>
+
+</div>
+
+<div class="chips" id="ex"></div>
+
+</div>
+
+
+
+<div class="card">
+
+<div class="tape" id="tape" aria-label="Cinta de la máquina"></div>
+
+<div class="info"><span>Estado: <b id="st">–</b></span><span>Pasos: <b id="n">0</b></span><span>Transición: <b id="tr">–</b></span></div>
+
+<p class="mut" id="ds" style="margin:.5em 0"></p>
+
+<div class="row" style="margin-top:6px">
+
+<button id="step">Paso</button><button class="p" id="run">▶ Animar</button><button id="all">Ejecutar completo</button><button id="reset">Reiniciar</button>
+
+<label style="flex-direction:row;align-items:center;gap:8px">Velocidad<input type="range" id="sp" min="1" max="10" value="6"></label>
+
+</div>
+
+<div id="msg"></div>
+
+</div>
+
+
+
+<div class="card"><h2>Verificación automática</h2>
+
+<div class="row"><button id="test">Probar todas las entradas de 1 a 5 bits</button><span id="tres" class="mut"></span></div></div>
+
+
+
+<div class="card"><h2>Alfabeto</h2>
+
+<p style="margin:.2em 0"><b>Entrada:</b> <code>0</code> <code>1</code> y el blanco (<code>□</code>) como separador. <b>Auxiliares</b> (resultado parcial + préstamo que sale de esa posición): <code>x</code> = 0 sin préstamo, <code>y</code> = 1 sin préstamo, <code>u</code> = 0 con préstamo, <code>v</code> = 1 con préstamo. <b>Salida:</b> <code>0</code>, <code>1</code>, <code>-</code>.</p></div>
+
+
+
+<div class="card"><h2>Descripción formal</h2>
+
+<p style="margin:.2em 0"><b>M = (Q, Σ, Γ, δ, q₀, □, F)</b></p>
+
+<ul style="margin:.4em 0 0;padding-left:1.2em">
+
+<li><b>Q</b> = {q0, q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12, q13, q14, q15, q16, q17}</li>
+
+<li><b>Σ</b> = {0, 1}. Por exigencia del enunciado la entrada es <code>A□B</code>: el blanco □ ∈ Γ∖Σ aparece como separador interno.</li>
+
+<li><b>Γ</b> = {0, 1, x, y, u, v, -, □}</li>
+
+<li><b>q₀</b> = q0  ·  <b>F</b> = {q17}  ·  <b>δ</b>: Q × Γ → Q × Γ × {L, R}, parcial y determinista (tabla de abajo).</li>
+
+</ul></div>
+
+
+
+<div class="card"><h2>Descripciones instantáneas (⊢)</h2>
+
+<p class="mut" style="margin:.2em 0 .6em">Notación <code>α q β</code>: la cabeza está sobre el primer símbolo de β y el estado es q. Se genera con la cadena cargada arriba.</p>
+
+<div id="ids" class="scroll" style="max-height:260px;overflow-y:auto;font:.84rem/1.6 ui-monospace,Menlo,Consolas,monospace;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:8px"></div>
+
+<div class="row" style="margin-top:8px"><button id="cp">Copiar IDs</button></div></div>
+
+
+
+<div class="card"><h2>Transiciones para JFLAP</h2>
+
+<p class="mut" style="margin:.2em 0 .8em">Formato <code>leer ; escribir , movimiento</code>. En JFLAP, <code>□</code> se escribe dejando el campo vacío. Estado inicial: <b>q0</b>. Final: <b>q17</b>. Total: <b id="cnt"></b>.</p>
+
+<div class="scroll"><table><thead><tr><th>Estado</th><th>Función</th><th>Transiciones</th></tr></thead><tbody id="tb"></tbody></table></div></div>
+
+
+
+<details class="card"><summary>Cómo funciona (para explicarlo)</summary>
+
+<ol style="margin:.6em 0 0;padding-left:1.2em">
+
+<li>De derecha a izquierda se toma el último dígito de B (si B ya se agotó, vale 0) y se borra.</li>
+
+<li>Se viaja hasta el último dígito de A sin procesar y se calcula <code>a − e − préstamo</code>; el resultado se escribe encima con una letra auxiliar que además guarda el préstamo de salida.</li>
+
+<li>Si A se agota antes que B, se usa un 0 implícito y el dígito nuevo se escribe en el blanco a la izquierda de A (la cinta de JFLAP es infinita en ambos sentidos).</li>
+
+<li>Cuando A y B están agotadas, el préstamo final indica el signo: sin préstamo, A ≥ B y se convierten las letras a 0/1; con préstamo, A < B, se escribe <code>-</code> y se aplica complemento a 2 (copiar hasta el primer 1 e invertir el resto).</li>
+
+</ol></details>
+
+</main>
+
+<script>
+
+const B='□',T=[];
+const STATE_NAMES={"S": "q0", "P": "q1", "E": "q2", "G": "q3", "T0": "q4", "T1": "q5", "U00": "q6", "U01": "q7", "U10": "q8", "U11": "q9", "W": "q10", "V0": "q11", "V1": "q12", "C": "q13", "NR": "q14", "N1": "q15", "N2": "q16", "qf": "q17"};
+const stateName=s=>STATE_NAMES[s]||s;
+const t=(f,to,r,w,m)=>T.push([stateName(f),stateName(to),r,w,m]);
+
+for(const s of '01xyuv')t('S','S',s,s,'R');t('S','P',B,B,'R');
+
+t('P','E','0','0','R');t('P','E','1','1','R');t('P','W',B,B,'L');
+
+for(const s of '01')t('E','E',s,s,'R');t('E','G',B,B,'L');
+
+t('G','T0','0',B,'L');t('G','T1','1',B,'L');
+
+for(const e of '01'){for(const s of '01')t('T'+e,'T'+e,s,s,'L');t('T'+e,'U'+e+'0',B,B,'L')}
+
+const rs={'00':'x','10':'y','01':'u','11':'v'},rb=d=>rs[(((d%2)+2)%2)+''+(d<0?1:0)];
+
+for(const e of [0,1])for(const b of [0,1]){const st='U'+e+b;
+
+ for(const s of 'xy')t(st,'U'+e+'0',s,s,'L');for(const s of 'uv')t(st,'U'+e+'1',s,s,'L');
+
+ for(const a of [0,1])t(st,'S',''+a,rb(a-e-b),'R');t(st,'S',B,rb(-e-b),'R')}
+
+t('W','V0',B,B,'L');
+
+for(const b of [0,1]){const st='V'+b;
+
+ for(const s of 'xy')t(st,'V0',s,s,'L');for(const s of 'uv')t(st,'V1',s,s,'L');
+
+ for(const a of [0,1])t(st,'S',''+a,rb(a-b),'R')}
+
+t('V0','C',B,B,'R');t('V1','NR',B,'-','R');
+
+for(const s of 'xu')t('C','C',s,'0','R');for(const s of 'yv')t('C','C',s,'1','R');t('C','qf',B,B,'R');
+
+for(const s of 'xyuv')t('NR','NR',s,s,'R');t('NR','N1',B,B,'L');
+
+for(const s of 'xu')t('N1','N1',s,'0','L');for(const s of 'yv')t('N1','N2',s,'1','L');
+
+for(const s of 'xu')t('N2','N2',s,'1','L');for(const s of 'yv')t('N2','N2',s,'0','L');t('N2','qf','-','-','R');
+
+const D={};T.forEach(([f,to,r,w,m])=>D[f+'|'+r]=[to,w,m]);
+
+const DESC={S:'Avanza hasta el separador (primer blanco).',P:'Comprueba si queda algún dígito de B.',E:'Va al final de B.',G:'Toma el último dígito de B y lo borra.',
+
+T0:'Vuelve al separador llevando e = 0.',T1:'Vuelve al separador llevando e = 1.',W:'B agotada: cruza el separador.',
+
+V0:'B agotada (e = 0), préstamo 0: busca el siguiente dígito de A.',V1:'B agotada (e = 0), préstamo 1: busca el siguiente dígito de A.',
+
+C:'Resultado ≥ 0: convierte x,u→0 e y,v→1.',NR:'Resultado negativo: va al final de las cifras.',N1:'Complemento a 2: copia hasta el primer 1.',N2:'Invierte el resto hasta llegar al signo.',qf:'Aceptación: queda solo el resultado.'};
+
+for(const e of [0,1])for(const b of [0,1])DESC['U'+e+b]=`En A con e = ${e} y préstamo ${b}: calcula a − e − préstamo y escribe x/y/u/v.`;
+
+for(const [oldName,newName] of Object.entries(STATE_NAMES)){DESC[newName]=DESC[oldName];delete DESC[oldName]}
+
+const $=id=>document.getElementById(id),fmt=([f,to,r,w,m])=>`${r} ; ${w} , ${m}`;
+
+const exp=(a,b)=>{const n=Math.max(a.length,b.length),v=parseInt(a,2)-parseInt(b,2);return(v<0?'-':'')+Math.abs(v).toString(2).padStart(n,'0')};
+
+function result(tp){const k=[...tp.keys()].sort((x,y)=>x-y);if(!k.length)return'';let s='';for(let i=k[0];i<=k[k.length-1];i++)s+=tp.get(i)||' ';return s}
+
+function exec(a,b){const tp=new Map();[...a].forEach((c,i)=>tp.set(i,c));[...b].forEach((c,i)=>tp.set(a.length+1+i,c));let p=0,s='q0',n=0,d;
+
+ while((d=D[s+'|'+(tp.get(p)||B)])&&n<1e6){if(d[1]===B)tp.delete(p);else tp.set(p,d[1]);p+=d[2]==='R'?1:-1;s=d[0];n++}return{s,out:result(tp),n}}
+
+let tape,pos,state,steps,last,done,timer,hist=[],ext={lo:-1,hi:1};
+
+function idOf(tp,p,s){const k=[...tp.keys(),p],lo=Math.min(...k),hi=Math.max(...k);let l='',r='';for(let i=lo;i<p;i++)l+=tp.get(i)||B;for(let i=p;i<=hi;i++)r+=tp.get(i)||B;return l+' '+s+' '+r}
+
+function renderIDs(){const e=$('ids');e.innerHTML=hist.map((x,i)=>`<div style="${i===hist.length-1?'color:var(--ac);font-weight:700':''}">${i?'⊢ ':'  '}${x.replace(/ /g,' ')}</div>`).join('');e.scrollTop=e.scrollHeight}
+
+$('cp').onclick=()=>{const s=hist.join(' ⊢ ');navigator.clipboard&&navigator.clipboard.writeText(s).then(()=>msg('IDs copiadas.'),()=>msg('No se pudo copiar.','bad'))};
+
+function msg(h,c){const m=$('msg');m.textContent=h;m.className=c||''}
+
+function load(){stop();const a=$('a').value.trim(),b=$('b').value.trim();
+
+ if(!/^[01]+$/.test(a)||!/^[01]+$/.test(b)){msg('Escribí solo 0 y 1 en A y en B (mínimo un dígito cada uno).','bad');return false}
+
+ tape=new Map();[...a].forEach((c,i)=>tape.set(i,c));[...b].forEach((c,i)=>tape.set(a.length+1+i,c));
+
+ pos=0;state='q0';steps=0;last=null;done=false;hist=[idOf(tape,0,'q0')];ext={lo:-1,hi:a.length+b.length+2};msg('Cinta cargada: '+a+' □ '+b);render();return true}
+
+function render(){let h='';const ks=[...tape.keys()];ext.lo=Math.min(ext.lo,pos-1,...ks.map(k=>k-1));ext.hi=Math.max(ext.hi,pos+1,...ks.map(k=>k+1));for(let i=ext.lo;i<=ext.hi;i++){const c=tape.get(i)||B;
+
+ h+=`<div class="c ${'xyuv'.includes(c)?'a':c==='-'?'g':c===B?'b':''} ${i===pos?'h':''}">${c}</div>`}
+
+ const tp=$('tape');tp.style.gridTemplateColumns=`repeat(${ext.hi-ext.lo+1},minmax(34px,1fr))`;tp.innerHTML=h;const hd=tp.querySelector('.h');if(hd)tp.scrollLeft=hd.offsetLeft-tp.clientWidth/2+hd.offsetWidth/2;$('st').textContent=state;$('n').textContent=steps;$('tr').textContent=last?fmt(last):'–';$('ds').textContent=DESC[state]||'';renderIDs()}
+
+function step(){if(!tape&&!load())return false;if(done)return false;const d=D[state+'|'+(tape.get(pos)||B)];
+
+ if(!d){done=true;stop();render();const out=result(tape).trim();const a=$('a').value.trim(),b=$('b').value.trim(),e=exp(a,b);
+
+  if(state==='q17')msg(`Aceptada. Resultado en la cinta: ${out}  ·  esperado: ${e}  ${out===e?'✓':'✗'}`,out===e?'ok':'bad');
+
+  else msg(`Rechazada en el estado ${state}: no hay transición definida.`,'bad');return false}
+
+ last=[state,d[0],tape.get(pos)||B,d[1],d[2]];if(d[1]===B)tape.delete(pos);else tape.set(pos,d[1]);
+
+ pos+=d[2]==='R'?1:-1;state=d[0];steps++;hist.push(idOf(tape,pos,state));render();return true}
+
+function stop(){if(timer){clearInterval(timer);timer=null;$('run').textContent='▶ Animar'}}
+
+$('run').onclick=()=>{if(timer){stop();return}if(!tape&&!load())return;if(done)load();$('run').textContent='⏸ Pausa';timer=setInterval(step,[900,700,520,380,280,200,140,90,50,25][$('sp').value-1])};
+
+$('step').onclick=()=>{stop();step()};
+
+$('all').onclick=()=>{stop();if(!load())return;let g=0;while(step()&&g++<1e6);};
+
+$('reset').onclick=load;$('load').onclick=load;
+
+[['1010','0011'],['0101','0011'],['0011','0101'],['1111','0011'],['1000','1000'],['1000','0001'],['0010','0111'],['11','0001'],['0001','11']].forEach(([a,b])=>{
+
+ const x=document.createElement('button');x.textContent=a+' □ '+b;x.onclick=()=>{$('a').value=a;$('b').value=b;load()};$('ex').appendChild(x)});
+
+$('test').onclick=()=>{let ok=0,bad=0,first='';
+
+ for(let la=1;la<=5;la++)for(let lb=1;lb<=5;lb++)for(let i=0;i<1<<la;i++)for(let j=0;j<1<<lb;j++){
+
+  const a=i.toString(2).padStart(la,'0'),b=j.toString(2).padStart(lb,'0'),r=exec(a,b);
+
+  if(r.s==='q17'&&r.out===exp(a,b))ok++;else{bad++;if(!first)first=a+' □ '+b}}
+
+ $('tres').innerHTML=bad?`<span class="bad">${bad} fallos (primero: ${first})</span>`:`<span class="ok">${ok} de ${ok} casos correctos ✓</span>`};
+
+const g={};T.forEach(x=>(g[x[0]]=g[x[0]]||[]).push(x));g.q17=[];
+
+$('tb').innerHTML=Object.keys(g).map(s=>`<tr><td><b>${s}</b>${s==='q0'?' (inicial)':s==='q17'?' (final)':''}</td><td>${DESC[s]}</td><td class="m">${g[s].map(x=>`${x[0]} → ${x[1]} : ${fmt(x)}`).join('<br>')||'—'}</td></tr>`).join('');
+
+$('cnt').textContent=T.length+' transiciones, '+Object.keys(g).length+' estados';
+
+load();
+
+</script></body></html>
